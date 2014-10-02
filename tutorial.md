@@ -1,13 +1,12 @@
 [TOC]
 
-# Introduction
+# Предисловие
 
-The structure of this tutorial assumes an intermediate level
-knowledge of Python but not much else. No knowledge of
-concurrency is expected. The goal is to give you
-the tools you need to get going with gevent, help you tame
-your existing concurrency problems and start writing asynchronous
-applications today.
+Данное руководство предполагает наличие среднего уровня знания
+языка Python но ничего больше. Знания в области параллельных вычислений
+не требуются. Основная задача руководства предоставить инструмент  который
+необходим для начала работы с gevent, помочь решить ваши существующие проблемы
+многопоточности и начать писать асинхронные программы уже сегодня.
 
 ### Contributors
 
@@ -39,28 +38,29 @@ This page is also available in [Japanese](http://methane.github.com/gevent-tutor
 
 ## Greenlets
 
-The primary pattern used in gevent is the <strong>Greenlet</strong>, a
-lightweight coroutine provided to Python as a C extension module.
-Greenlets all run inside of the OS process for the main
-program but are scheduled cooperatively.
+Основной паттерн используемый в gevent это **Greenlet**, легковесная задача
+предоставляемый Python как модуль расширения на C.
+Все greenlet-ы запускаются внутри процесса ОС главной программы но планируются
+для исполнения совместно.
 
-> Only one greenlet is ever running at any given time.
+> Только один greenlet исполняется в любой момент времени.
 
-This differs from any of the real parallelism constructs provided by
-``multiprocessing`` or ``threading`` libraries which do spin processes
-and POSIX threads which are scheduled by the operating system and
-are truly parallel.
+Это отличается от настоящего параллелизма из библиотек
+``multiprocessing`` и ``threading`` которые предоставляют запуск параллельных
+процессов и потоков POSIX которые планируются ОС и есть по настоящему
+параллельными.
 
-## Synchronous & Asynchronous Execution
+## Синхронное и Асинхронное Исполнение
 
-The core idea of concurrency is that a larger task can be broken down
-into a collection of subtasks which are scheduled to run simultaneously
-or *asynchronously*, instead of one at a time or *synchronously*. A
-switch between the two subtasks is known as a *context switch*.
+Основная идея многопоточности заключается в том что большая задача может
+быть разбита на несколько подзадач которые планируются для одновременного 
+или *асинхронного* исполнения, вместо поочерёдного или *синхронного*.
+Переключение между подзадачами известно как *переключение контекста*
+(англ. _context switch_).
 
-A context switch in gevent is done through *yielding*. In this 
-example we have two contexts which yield to each other through invoking
-``gevent.sleep(0)``.
+Переключение контекстов в gevent сделано с помощью приостановки задачи
+(анг. *yielding*). В этом примери мы имеем два контекста которые переключаются
+между собой вызывая ``gevent.sleep(0)``.
 
 [[[cog
 import gevent
@@ -82,20 +82,20 @@ gevent.joinall([
 ]]]
 [[[end]]]
 
-It is illuminating to visualize the control flow of the program or walk
-through it with a debugger to see the context switches as they occur.
+Изображение ниже демонстрирует исполнение программы или процесс прохода
+программы с помощью отладчика для того что-бы увидеть происходящее переключение
+контекстов.
 
 ![Greenlet Control Flow](flow.gif)
 
-The real power of gevent comes when we use it for network and IO
-bound functions which can be cooperatively scheduled. Gevent has
-taken care of all the details to ensure that your network
-libraries will implicitly yield their greenlet contexts whenever
-possible. I cannot stress enough what a powerful idiom this is.
-But maybe an example will illustrate.
+Настоящая сила gevent ощущается когда мы используем его сетевых или 
+IO функций которые могут быть запланированы совместно. Gevent позаботиться
+о всех деталях для того что-бы гарантировать неявное переключение контекстов
+в ваших сетевых библиотеках если это возможно. Я не могу выразить насколько 
+это мощная идиома, но возможно пример продемонстрирует это.
 
-In this case the ``select()`` function is normally a blocking
-call that polls on various file descriptors.
+В этом примере ``select()`` обычный блокирующий вызов который опрашивает
+различные файловые дискрипторы.
 
 [[[cog
 import time
@@ -223,7 +223,7 @@ asynchronous()
 </code>
 </pre>
 
-## Determinism
+## Детерминизм
 
 As mentioned previously, greenlets are deterministic. Given the same
 configuration of greenlets and the same set of inputs, they always
@@ -407,7 +407,7 @@ print(loser.exception)
 ]]]
 [[[end]]]
 
-## Program Shutdown
+## Остановка Программы
 
 Greenlets that fail to yield when the main program receives a
 SIGQUIT may hold the program's execution longer than expected.
@@ -1359,8 +1359,7 @@ WSGIServer(('', 8000), ajax_endpoint).serve_forever()
 
 ## Websockets
 
-Websocket example which requires <a href="https://bitbucket.org/Jeffrey/gevent-websocket/src">gevent-websocket</a>.
-
+Пример с Websocket требует модуль [gevent-websocket](https://bitbucket.org/Jeffrey/gevent-websocket/src).
 
 <pre>
 <code class="python"># Simple gevent-websocket server
@@ -1388,7 +1387,7 @@ server.serve_forever()
 </code>
 </pre>
 
-HTML Page:
+HTML Страница:
 
     <html>
         <head>
@@ -1424,13 +1423,14 @@ HTML Page:
     </html>
 
 
-## Chat Server
+## Чат сервер
 
-The final motivating example, a realtime chat room. This example
-requires <a href="http://flask.pocoo.org/">Flask</a> ( but not necessarily so, you could use Django,
-Pyramid, etc ). The corresponding Javascript and HTML files can
-be found <a href="https://github.com/sdiehl/minichat">here</a>.
-
+Послдений мотивирующий пример, это чат в реальном времени. Этот пример
+требует [Flask](http://flask.pocoo.org/) (но не обязательно,
+вы можете использовать [Django](https://www.djangoproject.com/),
+[Pyramid](http://www.pylonsproject.org/projects/pyramid/about) и тд.).
+Необходимые HTML и Javascript файлы могут быть найдены
+[тут](https://github.com/sdiehl/minichat).
 
 <pre>
 <code class="python"># Micro gevent chatroom.
@@ -1526,3 +1526,5 @@ if __name__ == "__main__":
     http.serve_forever()
 </code>
 </pre>
+
+*[ОС]: Операционная Система
