@@ -1,13 +1,12 @@
 [TOC]
 
-# Introduction
+# Предисловие
 
-The structure of this tutorial assumes an intermediate level
-knowledge of Python but not much else. No knowledge of
-concurrency is expected. The goal is to give you
-the tools you need to get going with gevent, help you tame
-your existing concurrency problems and start writing asynchronous
-applications today.
+Данное руководство предполагает наличие среднего уровня знания
+языка Python но ничего больше. Знания в области параллельных вычислений
+не требуются. Основная задача руководства предоставить инструмент  который
+необходим для начала работы с gevent, помочь решить ваши существующие проблемы
+многопоточности и начать писать асинхронные программы уже сегодня.
 
 ### Contributors
 
@@ -38,17 +37,17 @@ This page is also [available in Japanese](http://methane.github.com/gevent-tutor
 
 ## Greenlets
 
-The primary pattern used in gevent is the <strong>Greenlet</strong>, a
-lightweight coroutine provided to Python as a C extension module.
-Greenlets all run inside of the OS process for the main
-program but are scheduled cooperatively.
+Основной паттерн используемый в gevent это *Greenlet*, легковесная задача
+предоставляемый Python как модуль расширения на C.
+Все greenlet-ы запускаются внутри процесса ОС главной программы но планируются
+для исполнения совместно.
 
-> Only one greenlet is ever running at any given time.
+> Только один greenlet исполняется в любой момент времени.
 
-This differs from any of the real parallelism constructs provided by
-``multiprocessing`` or ``threading`` libraries which do spin processes
-and POSIX threads which are scheduled by the operating system and
-are truly parallel.
+Это отличается от настоящего параллелизма из библиотек
+``multiprocessing`` и ``threading`` которые предоставляют запуск параллельных
+процессов и потоков POSIX которые планируются ОС и есть по настоящему
+параллельными.
 
 ## Synchronous & Asynchronous Execution
 
