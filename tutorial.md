@@ -1525,3 +1525,5 @@ if __name__ == "__main__":
     http.serve_forever()
 </code>
 </pre>
+
+*[ОС]: Операционная Система

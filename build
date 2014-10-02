@@ -40,7 +40,7 @@ r3 = re.sub(r'\]\]\]',end_code + '\n' + start_code, r2)
 
 rendered_code = r3.decode('utf8')
 
-body = markdown.markdown(rendered_code, extensions=['toc'])
+body = markdown.markdown(rendered_code, extensions=['toc', 'abbr'])
 
 with codecs.open(OUTPUT, 'w+', 'utf8') as f:
     f.write(template.render(body=body))
