@@ -37,7 +37,7 @@ This page is also [available in Japanese](http://methane.github.com/gevent-tutor
 
 ## Greenlets
 
-Основной паттерн используемый в gevent это *Greenlet*, легковесная задача
+Основной паттерн используемый в gevent это **Greenlet**, легковесная задача
 предоставляемый Python как модуль расширения на C.
 Все greenlet-ы запускаются внутри процесса ОС главной программы но планируются
 для исполнения совместно.
@@ -49,16 +49,17 @@ This page is also [available in Japanese](http://methane.github.com/gevent-tutor
 процессов и потоков POSIX которые планируются ОС и есть по настоящему
 параллельными.
 
-## Synchronous & Asynchronous Execution
+## Синхронное и Асинхронное Исполнение
 
-The core idea of concurrency is that a larger task can be broken down
-into a collection of subtasks which are scheduled to run simultaneously
-or *asynchronously*, instead of one at a time or *synchronously*. A
-switch between the two subtasks is known as a *context switch*.
+Основная идея многопоточности заключается в том что большая задача может
+быть разбита на несколько подзадач которые планируются для одновременного 
+или *асинхронного* исполнения, вместо поочерёдного или *синхронного*.
+Переключение между подзадачами известно как *переключение контекста*
+(англ. _context switch_).
 
-A context switch in gevent is done through *yielding*. In this 
-example we have two contexts which yield to each other through invoking
-``gevent.sleep(0)``.
+Переключение контекстов в gevent сделано с помощью приостановки задачи
+(анг. *yielding*). В этом примери мы имеем два контекста которые переключаются
+между собой вызывая ``gevent.sleep(0)``.
 
 [[[cog
 import gevent
@@ -80,20 +81,20 @@ gevent.joinall([
 ]]]
 [[[end]]]
 
-It is illuminating to visualize the control flow of the program or walk
-through it with a debugger to see the context switches as they occur.
+Изображение ниже демонстрирует исполнение программы или процесс прохода
+программы с помощью отладчика для того что-бы увидеть происходящее переключение
+контекстов.
 
 ![Greenlet Control Flow](flow.gif)
 
-The real power of gevent comes when we use it for network and IO
-bound functions which can be cooperatively scheduled. Gevent has
-taken care of all the details to ensure that your network
-libraries will implicitly yield their greenlet contexts whenever
-possible. I cannot stress enough what a powerful idiom this is.
-But maybe an example will illustrate.
+Настоящая сила gevent ощущается когда мы используем его сетевых или 
+IO функций которые могут быть запланированы совместно. Gevent позаботиться
+о всех деталях для того что-бы гарантировать неявное переключение контекстов
+в ваших сетевых библиотеках если это возможно. Я не могу выразить насколько 
+это мощная идиома, но возможно пример продемонстрирует это.
 
-In this case the ``select()`` function is normally a blocking
-call that polls on various file descriptors.
+В этом примере ``select()`` обычный блокирующий вызов который опрашивает
+различные файловые дискрипторы.
 
 [[[cog
 import time
@@ -221,7 +222,7 @@ asynchronous()
 </code>
 </pre>
 
-## Determinism
+## Детерминизм
 
 As mentioned previously, greenlets are deterministic. Given the same
 configuration of greenlets and the same set of inputs, they always
@@ -405,7 +406,7 @@ print(loser.exception)
 ]]]
 [[[end]]]
 
-## Program Shutdown
+## Остановка Программы
 
 Greenlets that fail to yield when the main program receives a
 SIGQUIT may hold the program's execution longer than expected.
@@ -1357,8 +1358,7 @@ WSGIServer(('', 8000), ajax_endpoint).serve_forever()
 
 ## Websockets
 
-Websocket example which requires <a href="https://bitbucket.org/Jeffrey/gevent-websocket/src">gevent-websocket</a>.
-
+Пример с Websocket требует модуль [gevent-websocket](https://bitbucket.org/Jeffrey/gevent-websocket/src).
 
 <pre>
 <code class="python"># Simple gevent-websocket server
@@ -1386,7 +1386,7 @@ server.serve_forever()
 </code>
 </pre>
 
-HTML Page:
+HTML Страница:
 
     <html>
         <head>
@@ -1422,13 +1422,14 @@ HTML Page:
     </html>
 
 
-## Chat Server
+## Чат сервер
 
-The final motivating example, a realtime chat room. This example
-requires <a href="http://flask.pocoo.org/">Flask</a> ( but not necessarily so, you could use Django,
-Pyramid, etc ). The corresponding Javascript and HTML files can
-be found <a href="https://github.com/sdiehl/minichat">here</a>.
-
+Послдений мотивирующий пример, это чат в реальном времени. Этот пример
+требует [Flask](http://flask.pocoo.org/) (но не обязательно,
+вы можете использовать [Django](https://www.djangoproject.com/),
+[Pyramid](http://www.pylonsproject.org/projects/pyramid/about) и тд.).
+Необходимые HTML и Javascript файлы могут быть найдены
+[тут](https://github.com/sdiehl/minichat).
 
 <pre>
 <code class="python"># Micro gevent chatroom.
