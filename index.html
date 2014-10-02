@@ -17,7 +17,7 @@
     <!-- Syntax Highlighting Theme -->
     <link rel="stylesheet" href="github.min.css">
 
-    <title>Gevent Tutorial</title>
+    <title>Перевод Gevent Tutorial</title>
 </head>
 <style>
 
@@ -33,29 +33,31 @@
 <div class="twelve columns offset-by-three content">
 
     <header>
-        <h1><span class="green">gevent</span> For the Working Python Developer</h1>
+        <h1><span class="green">gevent</span> Для Python Разработчика</h1>
         <h3 class="author">
-            Written by the Gevent Community
+            Написано сообществом Gevent
         </h3>
 
         <blockquote>
-        gevent is a concurrency library based around <a href="http://software.schmorp.de/pkg/libev.html">libev</a>.  It provides a clean API for a variety of concurrency and network related tasks.
+        gevent это многопоточная библиотека построенная на базе
+        <a href="http://software.schmorp.de/pkg/libev.html">libev</a>.
+        Она предоставляет простой API для разнообразных параллельных и сетевых задач.
         </blockquote>
     </header>
 
     <div class="toc">
 <ul>
-<li><a href="#introduction">Introduction</a><ul>
+<li><a href="#">Предисловие</a><ul>
 <li><a href="#contributors">Contributors</a></li>
 </ul>
 </li>
 <li><a href="#core">Core</a><ul>
 <li><a href="#greenlets">Greenlets</a></li>
-<li><a href="#synchronous-asynchronous-execution">Synchronous &amp; Asynchronous Execution</a></li>
-<li><a href="#determinism">Determinism</a></li>
+<li><a href="#_1">Синхронное и Асинхронное Исполнение</a></li>
+<li><a href="#_2">Детерминизм</a></li>
 <li><a href="#spawning-greenlets">Spawning Greenlets</a></li>
 <li><a href="#greenlet-state">Greenlet State</a></li>
-<li><a href="#program-shutdown">Program Shutdown</a></li>
+<li><a href="#_3">Остановка Программы</a></li>
 <li><a href="#timeouts">Timeouts</a></li>
 <li><a href="#monkeypatching">Monkeypatching</a></li>
 </ul>
@@ -77,18 +79,17 @@
 <li><a href="#streaming-servers">Streaming Servers</a></li>
 <li><a href="#long-polling">Long Polling</a></li>
 <li><a href="#websockets">Websockets</a></li>
-<li><a href="#chat-server">Chat Server</a></li>
+<li><a href="#_4">Чат сервер</a></li>
 </ul>
 </li>
 </ul>
 </div>
-<h1 id="introduction">Introduction</h1>
-<p>The structure of this tutorial assumes an intermediate level
-knowledge of Python but not much else. No knowledge of
-concurrency is expected. The goal is to give you
-the tools you need to get going with gevent, help you tame
-your existing concurrency problems and start writing asynchronous
-applications today.</p>
+<h1 id="">Предисловие</h1>
+<p>Данное руководство предполагает наличие среднего уровня знания
+языка Python но ничего больше. Знания в области параллельных вычислений
+не требуются. Основная задача руководства предоставить инструмент  который
+необходим для начала работы с gevent, помочь решить ваши существующие проблемы
+многопоточности и начать писать асинхронные программы уже сегодня.</p>
 <h3 id="contributors">Contributors</h3>
 <p>In chronological order of contribution:
 <a href="http://www.stephendiehl.com">Stephen Diehl</a>
@@ -111,25 +112,26 @@ Any and all contributions are welcome.</p>
 <p>This page is also <a href="http://methane.github.com/gevent-tutorial-ja">available in Japanese</a>.</p>
 <h1 id="core">Core</h1>
 <h2 id="greenlets">Greenlets</h2>
-<p>The primary pattern used in gevent is the <strong>Greenlet</strong>, a
-lightweight coroutine provided to Python as a C extension module.
-Greenlets all run inside of the OS process for the main
-program but are scheduled cooperatively.</p>
+<p>Основной паттерн используемый в gevent это <strong>Greenlet</strong>, легковесная задача
+предоставляемый Python как модуль расширения на C.
+Все greenlet-ы запускаются внутри процесса <abbr title="Операционная Система">ОС</abbr> главной программы но планируются
+для исполнения совместно.</p>
 <blockquote>
-<p>Only one greenlet is ever running at any given time.</p>
+<p>Только один greenlet исполняется в любой момент времени.</p>
 </blockquote>
-<p>This differs from any of the real parallelism constructs provided by
-<code>multiprocessing</code> or <code>threading</code> libraries which do spin processes
-and POSIX threads which are scheduled by the operating system and
-are truly parallel.</p>
-<h2 id="synchronous-asynchronous-execution">Synchronous &amp; Asynchronous Execution</h2>
-<p>The core idea of concurrency is that a larger task can be broken down
-into a collection of subtasks which are scheduled to run simultaneously
-or <em>asynchronously</em>, instead of one at a time or <em>synchronously</em>. A
-switch between the two subtasks is known as a <em>context switch</em>.</p>
-<p>A context switch in gevent is done through <em>yielding</em>. In this case
-example we have two contexts which yield to each other through invoking
-<code>gevent.sleep(0)</code>.</p>
+<p>Это отличается от настоящего параллелизма из библиотек
+<code>multiprocessing</code> и <code>threading</code> которые предоставляют запуск параллельных
+процессов и потоков POSIX которые планируются <abbr title="Операционная Система">ОС</abbr> и есть по настоящему
+параллельными.</p>
+<h2 id="_1">Синхронное и Асинхронное Исполнение</h2>
+<p>Основная идея многопоточности заключается в том что большая задача может
+быть разбита на несколько подзадач которые планируются для одновременного 
+или <em>асинхронного</em> исполнения, вместо поочерёдного или <em>синхронного</em>.
+Переключение между подзадачами известно как <em>переключение контекста</em>
+(англ. <em>context switch</em>).</p>
+<p>Переключение контекстов в gevent сделано с помощью приостановки задачи
+(анг. <em>yielding</em>). В этом примери мы имеем два контекста которые переключаются
+между собой вызывая <code>gevent.sleep(0)</code>.</p>
 <pre><code class="python">
 import gevent
 
@@ -156,17 +158,17 @@ Explicit context to bar
 Explicit context switch to foo again
 Implicit context switch back to bar
 </pre></code></p>
-<p>It is illuminating to visualize the control flow of the program or walk
-through it with a debugger to see the context switches as they occur.</p>
+<p>Изображение ниже демонстрирует исполнение программы или процесс прохода
+программы с помощью отладчика для того что-бы увидеть происходящее переключение
+контекстов.</p>
 <p><img alt="Greenlet Control Flow" src="flow.gif" /></p>
-<p>The real power of gevent comes when we use it for network and IO
-bound functions which can be cooperatively scheduled. Gevent has
-taken care of all the details to ensure that your network
-libraries will implicitly yield their greenlet contexts whenever
-possible. I cannot stress enough what a powerful idiom this is.
-But maybe an example will illustrate.</p>
-<p>In this case the <code>select()</code> function is normally a blocking
-call that polls on various file descriptors.</p>
+<p>Настоящая сила gevent ощущается когда мы используем его сетевых или 
+IO функций которые могут быть запланированы совместно. Gevent позаботиться
+о всех деталях для того что-бы гарантировать неявное переключение контекстов
+в ваших сетевых библиотеках если это возможно. Я не могу выразить насколько 
+это мощная идиома, но возможно пример продемонстрирует это.</p>
+<p>В этом примере <code>select()</code> обычный блокирующий вызов который опрашивает
+различные файловые дискрипторы.</p>
 <pre><code class="python">
 import time
 import gevent
@@ -251,15 +253,15 @@ Task 7 done
 Task 8 done
 Task 9 done
 Asynchronous:
+Task 5 done
+Task 8 done
+Task 0 done
+Task 1 done
 Task 3 done
+Task 4 done
 Task 7 done
 Task 2 done
 Task 6 done
-Task 5 done
-Task 4 done
-Task 0 done
-Task 1 done
-Task 8 done
 Task 9 done
 </pre></code></p>
 <p>In the synchronous case all the tasks are run sequentially,
@@ -318,7 +320,7 @@ asynchronous()
 </code>
 </pre>
 
-<h2 id="determinism">Determinism</h2>
+<h2 id="_2">Детерминизм</h2>
 <p>As mentioned previously, greenlets are deterministic. Given the same
 configuration of greenlets and the same set of inputs, they always
 produce the same output. For example, let's spread a task across a
@@ -485,7 +487,7 @@ print(loser.ready())  # True
 print(winner.successful()) # True
 print(loser.successful())  # False
 
-# The exception raised in fail, will not propogate outside the
+# The exception raised in fail, will not propagate outside the
 # greenlet. A stack trace will be printed to stdout but it
 # will not unwind the stack of the parent.
 
@@ -509,7 +511,7 @@ True
 False
 You fail at failing.
 </pre></code></p>
-<h2 id="program-shutdown">Program Shutdown</h2>
+<h2 id="_3">Остановка Программы</h2>
 <p>Greenlets that fail to yield when the main program receives a
 SIGQUIT may hold the program's execution longer than expected.
 This results in so called "zombie processes" which need to be
@@ -524,7 +526,7 @@ def run_forever():
     gevent.sleep(1000)
 
 if __name__ == '__main__':
-    gevent.signal(signal.SIGQUIT, gevent.shutdown)
+    gevent.signal(signal.SIGQUIT, gevent.kill)
     thread = gevent.spawn(run_forever)
     thread.join()
 </code>
@@ -705,7 +707,7 @@ if __name__ == '__main__': main()
 </code>
 </pre>
 
-<p>A extension of the Event object is the AsyncResult which
+<p>An extension of the Event object is the AsyncResult which
 allows you to send a value along with the wakeup call. This is
 sometimes called a future or a deferred, since it holds a
 reference to a future value that can be set on an arbitrary time
@@ -741,7 +743,7 @@ gevent.joinall([
 <p>Queues are ordered sets of data that have the usual <code>put</code> / <code>get</code>
 operations but are written in a way such that they can be safely
 manipulated across Greenlets.</p>
-<p>For example, if one Greenlet grabs an item off of the queue, the
+<p>For example if one Greenlet grabs an item off of the queue, the
 same item will not be grabbed by another Greenlet executing
 simultaneously.</p>
 <pre><code class="python">
@@ -777,26 +779,26 @@ Worker steve got task 1
 Worker john got task 2
 Worker nancy got task 3
 Worker steve got task 4
-Worker nancy got task 5
-Worker john got task 6
+Worker john got task 5
+Worker nancy got task 6
 Worker steve got task 7
 Worker john got task 8
 Worker nancy got task 9
 Worker steve got task 10
-Worker nancy got task 11
-Worker john got task 12
+Worker john got task 11
+Worker nancy got task 12
 Worker steve got task 13
 Worker john got task 14
 Worker nancy got task 15
 Worker steve got task 16
-Worker nancy got task 17
-Worker john got task 18
+Worker john got task 17
+Worker nancy got task 18
 Worker steve got task 19
 Worker john got task 20
 Worker nancy got task 21
 Worker steve got task 22
-Worker nancy got task 23
-Worker john got task 24
+Worker john got task 23
+Worker nancy got task 24
 Quitting time!
 Quitting time!
 Quitting time!
@@ -806,7 +808,7 @@ Quitting time!
 counterpart, <code>put_nowait</code> and
 <code>get_nowait</code> which will not block, but instead raise
 either <code>gevent.queue.Empty</code> or
-<code>gevent.queue.Full</code> in the operation is not possible.</p>
+<code>gevent.queue.Full</code> if the operation is not possible.</p>
 <p>In this example we have the boss running simultaneously to the
 workers and have a restriction on the Queue preventing it from containing
 more than three elements. This restriction means that the <code>put</code>
@@ -814,7 +816,7 @@ operation will block until there is space on the queue.
 Conversely the <code>get</code> operation will block if there are
 no elements on the queue to fetch, it also takes a timeout
 argument to allow for the queue to exit with the exception
-<code>gevent.queue.Empty</code> if no work can found within the
+<code>gevent.queue.Empty</code> if no work can be found within the
 time frame of the Timeout.</p>
 <pre><code class="python">
 import gevent
@@ -822,11 +824,11 @@ from gevent.queue import Queue, Empty
 
 tasks = Queue(maxsize=3)
 
-def worker(n):
+def worker(name):
     try:
         while True:
             task = tasks.get(timeout=1) # decrements queue size by 1
-            print('Worker %s got task %s' % (n, task))
+            print('Worker %s got task %s' % (name, task))
             gevent.sleep(0)
     except Empty:
         print('Quitting time!')
@@ -859,21 +861,21 @@ Worker steve got task 1
 Worker john got task 2
 Worker bob got task 3
 Worker steve got task 4
-Worker bob got task 5
-Worker john got task 6
+Worker john got task 5
+Worker bob got task 6
 Assigned all work in iteration 1
 Worker steve got task 7
 Worker john got task 8
 Worker bob got task 9
 Worker steve got task 10
-Worker bob got task 11
-Worker john got task 12
+Worker john got task 11
+Worker bob got task 12
 Worker steve got task 13
 Worker john got task 14
 Worker bob got task 15
 Worker steve got task 16
-Worker bob got task 17
-Worker john got task 18
+Worker john got task 17
+Worker bob got task 18
 Assigned all work in iteration 2
 Worker steve got task 19
 Quitting time!
@@ -955,11 +957,11 @@ for i in igroup.imap_unordered(intensive, xrange(3)):
 <p></code>
 <pre><code class="python">
 Size of group 3
-Hello from Greenlet 157878268
+Hello from Greenlet 140363948634192
 Size of group 3
-Hello from Greenlet 157878828
+Hello from Greenlet 140363948635312
 Size of group 3
-Hello from Greenlet 157878908
+Hello from Greenlet 140363948634832
 Ordered
 ('task', 0)
 ('task', 1)
@@ -1023,7 +1025,7 @@ class SocketPool(object):
 <p>A semaphore is a low level synchronization primitive that allows
 greenlets to coordinate and limit concurrent access or execution. A
 semaphore exposes two methods, <code>acquire</code> and <code>release</code> The
-difference between the number of times and a semaphore has been
+difference between the number of times a semaphore has been
 acquired and released is called the bound of the semaphore. If a
 semaphore bound reaches 0 it will block until another greenlet
 releases its acquisition.</p>
@@ -1105,10 +1107,10 @@ gevent.joinall([g1, g2])
 2
 x is not local to f2
 </pre></code></p>
-<p>Many web framework thats integrate with gevent store HTTP session
-objects inside of gevent thread locals. For example using the
+<p>Many web frameworks that use gevent store HTTP session
+objects inside gevent thread locals. For example, using the
 Werkzeug utility library and its proxy object we can create
-Flask style request objects.</p>
+Flask-style request objects.</p>
 <pre>
 <code class="python">from gevent.local import local
 from werkzeug.local import LocalProxy
@@ -1263,7 +1265,7 @@ class Actor(gevent.Greenlet):
 
     def __init__(self):
         self.inbox = Queue()
-        gevent.Greenlet.__init__(self)
+        Greenlet.__init__(self)
 
     def receive(self, message):
         """
@@ -1523,7 +1525,7 @@ WSGIServer(('', 8000), ajax_endpoint).serve_forever()
 </pre>
 
 <h2 id="websockets">Websockets</h2>
-<p>Websocket example which requires <a href="https://bitbucket.org/Jeffrey/gevent-websocket/src">gevent-websocket</a>.</p>
+<p>Пример с Websocket требует модуль <a href="https://bitbucket.org/Jeffrey/gevent-websocket/src">gevent-websocket</a>.</p>
 <pre>
 <code class="python"># Simple gevent-websocket server
 import json
@@ -1550,7 +1552,7 @@ server.serve_forever()
 </code>
 </pre>
 
-<p>HTML Page:</p>
+<p>HTML Страница:</p>
 <pre><code>&lt;html&gt;
     &lt;head&gt;
         &lt;title&gt;Minimal websocket application&lt;/title&gt;
@@ -1584,11 +1586,13 @@ server.serve_forever()
     &lt;/body&gt;
 &lt;/html&gt;
 </code></pre>
-<h2 id="chat-server">Chat Server</h2>
-<p>The final motivating example, a realtime chat room. This example
-requires <a href="http://flask.pocoo.org/">Flask</a> ( but not neccesarily so, you could use Django,
-Pyramid, etc ). The corresponding Javascript and HTML files can
-be found <a href="https://github.com/sdiehl/minichat">here</a>.</p>
+<h2 id="_4">Чат сервер</h2>
+<p>Послдений мотивирующий пример, это чат в реальном времени. Этот пример
+требует <a href="http://flask.pocoo.org/">Flask</a> (но не обязательно,
+вы можете использовать <a href="https://www.djangoproject.com/">Django</a>,
+<a href="http://www.pylonsproject.org/projects/pyramid/about">Pyramid</a> и тд.).
+Необходимые HTML и Javascript файлы могут быть найдены
+<a href="https://github.com/sdiehl/minichat">тут</a>.</p>
 <pre>
 <code class="python"># Micro gevent chatroom.
 # ----------------------
